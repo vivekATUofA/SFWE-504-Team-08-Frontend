@@ -1,36 +1,57 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { ApiService } from '../../../../src/app/core/services/api.service'; // Assuming ApiService is in core/services
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { HeaderComponent } from '../../shared/components/header/header.component';
+import { FooterComponent } from '../../shared/components/footer/footer.component';
 
-// Define the expected structure for a scholarship object
+import { ApiService } from '../../../../src/app/core/services/api.service';
+
 interface Scholarship {
   id: number;
   name: string;
   description: string;
   amount: number;
-  deadline: string;
-  // Add other necessary fields (e.g., status, eligibility)
+  archived: boolean;
+  applied?: boolean; // optional for student actions
 }
 
 @Component({
   selector: 'app-scholarships',
   standalone: true,
-  templateUrl: './scholarships.component.html', 
+  templateUrl: './scholarships.component.html',
   imports: [
-    CommonModule, 
-    RouterModule // Needed for routerLink
+    CommonModule,
+    RouterModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatInputModule,
+    MatButtonModule,
+    MatSnackBarModule,
+    HeaderComponent,  
+    FooterComponent  
   ]
 })
 export class ScholarshipsComponent implements OnInit {
-  
-  scholarships: Scholarship[] = [];
-  loading = true;
-  errorMessage: string | null = null;
+
+  displayedColumns: string[] = ['id', 'name', 'description', 'amount', 'actions'];
+  dataSource = new MatTableDataSource<Scholarship>([]);
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+
+  loading = false;
 
   constructor(
-    private apiService: ApiService
-  ) { }
+    private apiService: ApiService,
+    private snackBar: MatSnackBar
+  ) {}
 
   ngOnInit(): void {
     this.loadScholarships();
@@ -38,26 +59,49 @@ export class ScholarshipsComponent implements OnInit {
 
   loadScholarships(): void {
     this.loading = true;
-    this.errorMessage = null;
-
-    // IMPORTANT: Assuming the API endpoint for listing scholarships is '/v1/scholarships'
     this.apiService.get('/scholarships').subscribe({
       next: (data: Scholarship[]) => {
-        this.scholarships = data;
+        this.dataSource.data = data;
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
         this.loading = false;
-        console.log('Scholarships loaded:', data);
       },
-      error: (err: any) => {
+      error: (err) => {
         this.loading = false;
-        this.errorMessage = 'Failed to load scholarships. Check if the API is running and the token is valid.';
-        console.error('API Error:', err);
+        console.error('Error loading scholarships', err);
+        this.snackBar.open('Failed to load scholarships', 'Close', { duration: 3000 });
       }
     });
   }
 
-  // Placeholder for future actions
-  viewDetails(id: number): void {
-    console.log('Viewing details for scholarship:', id);
-    // Future: navigate to a detailed view page
+  applyFilter(event: Event): void {
+    const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.dataSource.filter = filterValue;
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
+
+  viewDetails(scholarshipId: number): void {
+    console.log('View details for scholarship', scholarshipId);
+    // Future: navigate to a detailed page
+  }
+
+editScholarship(id: number) {
+  console.log('Edit scholarship', id);
+  // TODO: Open edit dialog or navigate to edit page
+}
+
+deleteScholarship(id: number) {
+  console.log('Delete scholarship', id);
+  // TODO: Call API to delete
+}
+
+applyForScholarship(id: number) {
+  console.log('Apply for scholarship', id);
+  // TODO: Call API to apply
+  const scholarship = this.dataSource.data.find(s => s.id === id);
+  if (scholarship) scholarship.applied = true;
+}
+
 }

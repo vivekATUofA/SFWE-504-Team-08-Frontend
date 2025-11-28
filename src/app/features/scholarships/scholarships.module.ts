@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
 import { ScholarshipsRoutingModule } from './scholarships-routing.module';
 import { ScholarshipsComponent } from './scholarships.component';
 
