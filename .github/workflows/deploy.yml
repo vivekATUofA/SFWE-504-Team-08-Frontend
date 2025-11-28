@@ -8,58 +8,40 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    
+
     permissions:
       contents: write
-      pages: write 
+      pages: write
       id-token: write
-    
+
     steps:
-      - name: Checkout code
+      # 1. Checkout source code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      # 2. Node.js setup
+      - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 20
 
+      # 3. Install dependencies
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Build Angular application (Production and Base Href)
-        # Uses production config and sets the critical base-href.
-        run: npm run build -- --configuration=production --output-path=deploy-output --base-href=/SFWE-504-Team-08-Frontend/
-
-      - name: Diagnose Build Output Structure
-        # NEW STEP: This lists all files created, revealing the exact path to index.html.
+      # 4. Build Angular with correct base-href
+      - name: Build Angular App
         run: |
-          echo "--- Listing contents of ./deploy-output ---"
-          ls -R ./deploy-output
-          echo "----------------------------------------"
+          npm run build -- --configuration production --base-href=/SFWE-504-Team-08-Frontend/
+          echo "Build output:"
+          ls -R dist
 
-      - name: Define Publish Directory (Dynamic Search)
-        # Reverting to the dynamic search to correctly find the nested folder.
-        id: find_publish_dir
-        run: |
-          BUILD_ROOT="./deploy-output"
-          
-          # Find the actual directory containing index.html
-          PUBLISH_DIR=$(find $BUILD_ROOT -name index.html -print -quit | xargs dirname)
-          
-          if [ -z "$PUBLISH_DIR" ]; then
-            echo "::error::Could not find index.html inside $BUILD_ROOT. Deployment will fail."
-            exit 1
-          fi
-          
-          echo "Found publish directory: $PUBLISH_DIR"
-          echo "PUBLISH_DIR=$PUBLISH_DIR" >> $GITHUB_OUTPUT
-
+      # 5. Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          # Uses the dynamically found path, e.g., ./deploy-output/app-name/browser
-          publish_dir: ${{ steps.find_publish_dir.outputs.PUBLISH_DIR }}
           publish_branch: gh-pages
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
+          publish_dir: ./dist/SFWE-504-Team-08-Frontend/browser
+          user_name: github-actions[bot]
+          user_email: github-actions[bot]@users.noreply.github.com
