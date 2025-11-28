@@ -29,7 +29,7 @@ export class LoginComponent implements OnInit {
     private router: Router
   ) {
     if (this.authService.isLoggedIn()) {
-      this.router.navigate(['/scholarships']);
+      this.router.navigate(['/dashboard']);
     }
 
     this.form = this.fb.group({

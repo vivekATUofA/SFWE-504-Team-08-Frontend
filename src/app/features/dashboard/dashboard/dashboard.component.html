@@ -2,49 +2,32 @@
 
 <div class="dashboard-grid">
 
+  <!-- Row 1 -->
   <div class="chart-card">
-    <h3>Scholarship Amounts (Bar)</h3>
-    <canvas baseChart
-      [data]="barChartData"
-      [options]="chartOptions"
-      chartType="bar">
-    </canvas>
+    <h3>Scholarship Amounts</h3>
+    <canvas baseChart [data]="barData" [options]="chartOptions" [type]="barType"></canvas>
   </div>
 
   <div class="chart-card">
-    <h3>Scholarship Distribution (Pie)</h3>
-    <canvas baseChart
-      [data]="pieChartData"
-      [options]="chartOptions"
-      chartType="pie">
-    </canvas>
+    <h3>Scholarship Distribution</h3>
+    <canvas baseChart [data]="pieData" [options]="chartOptions" [type]="pieType"></canvas>
+  </div>
+
+  <!-- Row 2 -->
+  <div class="chart-card">
+    <h3>Scholarship Split</h3>
+    <canvas baseChart [data]="doughnutData" [options]="chartOptions" [type]="doughnutType"></canvas>
   </div>
 
   <div class="chart-card">
-    <h3>Scholarship Split (Doughnut)</h3>
-    <canvas baseChart
-      [data]="doughnutChartData"
-      [options]="chartOptions"
-      chartType="doughnut">
-    </canvas>
+    <h3>Scholarship Trend</h3>
+    <canvas baseChart [data]="lineData" [options]="chartOptions" [type]="lineType"></canvas>
   </div>
 
-  <div class="chart-card">
-    <h3>Scholarship Trend (Line)</h3>
-    <canvas baseChart
-      [data]="lineChartData"
-      [options]="chartOptions"
-      chartType="line">
-    </canvas>
-  </div>
-
-  <div class="chart-card">
+  <!-- Row 3 -->
+  <div class="chart-card full-width">
     <h3>Scholarship Radar View</h3>
-    <canvas baseChart
-      [data]="radarChartData"
-      [options]="chartOptions"
-      chartType="radar">
-    </canvas>
+    <canvas baseChart [data]="radarData" [options]="chartOptions" [type]="radarType"></canvas>
   </div>
 
 </div>
