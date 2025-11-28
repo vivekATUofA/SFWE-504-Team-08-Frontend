@@ -1,0 +1,21 @@
+/* You can add global styles to this file, and also import other style files */
+/* Import Bootstrap 5. This is the main CSS import. */
+@import "bootstrap/scss/bootstrap";
+
+/* Global Styles */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa; /* Light grey background */
+}
+
+.content {
+    min-height: calc(100vh - 120px); 
+    padding-bottom: 50px; 
+}
+
+.container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 15px;
+}

@@ -1,0 +1,47 @@
+<div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+  <div class="card p-4 shadow-lg" style="max-width: 420px; width: 100%;">
+    <h2 class="text-center mb-4 text-primary">Create Account</h2>
+
+    <form [formGroup]="form" (ngSubmit)="register()">
+
+      <div class="mb-3">
+        <label for="fullName" class="form-label">Full Name</label>
+        <input type="text" id="fullName" formControlName="fullName" class="form-control" [ngClass]="{'is-invalid': form.get('fullName')?.invalid && form.get('fullName')?.touched}" />
+      </div>
+
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" id="email" formControlName="email" class="form-control" [ngClass]="{'is-invalid': form.get('email')?.invalid && form.get('email')?.touched}" />
+        <div class="invalid-feedback" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+          Valid email is required.
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" id="password" formControlName="password" class="form-control" [ngClass]="{'is-invalid': form.get('password')?.invalid && form.get('password')?.touched}" />
+      </div>
+
+      <div class="mb-4">
+        <label for="confirmPassword" class="form-label">Confirm Password</label>
+        <input type="password" id="confirmPassword" formControlName="confirmPassword" class="form-control" [ngClass]="{'is-invalid': form.errors?.['mismatch'] && form.get('confirmPassword')?.touched}" />
+        <div class="invalid-feedback" *ngIf="form.errors?.['mismatch'] && form.get('confirmPassword')?.touched">
+          Passwords must match.
+        </div>
+      </div>
+
+      <div class="alert alert-danger text-center" *ngIf="errorMessage">{{ errorMessage }}</div>
+      <div class="alert alert-success text-center" *ngIf="message">{{ message }}</div>
+
+      <button type="submit" class="btn btn-primary w-100" [disabled]="loading || form.invalid">
+        <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+        {{ loading ? 'Processing...' : 'Register' }}
+      </button>
+
+      <p class="text-center mt-3 small">
+        Already have an account? <a routerLink="/auth/login">Login</a>
+      </p>
+
+    </form>
+  </div>
+</div>
