@@ -51,7 +51,7 @@ export class LoginComponent implements OnInit {
 
     this.authService.login(this.form.value).subscribe({
       next: () => {
-        this.router.navigate(['/scholarships']);
+        this.router.navigate(['/dashboard']);
       },
       error: (err: any) => { 
         this.loading = false;
