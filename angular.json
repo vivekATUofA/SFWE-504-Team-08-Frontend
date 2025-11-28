@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "uasams-frontend": {
+    "SFWE-504-Team-08-Frontend": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -42,7 +42,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/uasams-frontend",
+            "outputPath": "dist/SFWE-504-Team-08-Frontend",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -94,10 +94,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "uasams-frontend:build:production"
+              "buildTarget": "SFWE-504-Team-08-Frontend:build:production"
             },
             "development": {
-              "buildTarget": "uasams-frontend:build:development"
+              "buildTarget": "SFWE-504-Team-08-Frontend:build:development"
             }
           },
           "defaultConfiguration": "development"
