@@ -2,13 +2,21 @@
 
 <div class="container p-4">
 
-  <h1 class="text-3xl font-bold mb-4">Available Scholarships</h1>
+<!-- Top Action Bar -->
+<div class="action-bar mb-4 d-flex justify-content-between align-items-center">
 
-  <!-- Filter Input -->
-  <mat-form-field appearance="outline" class="w-full mb-4">
-    <mat-label>Filter scholarships</mat-label>
+  <!-- Search -->
+  <mat-form-field appearance="outline" class="search-field">
+    <mat-label>Search Scholarships</mat-label>
     <input matInput (keyup)="applyFilter($event)" placeholder="Type to filter">
   </mat-form-field>
+
+  <!-- Create Button -->
+  <button mat-flat-button class="btn-add" *ngIf="isAdmin()" (click)="createScholarship()">
+    + Add Scholarship
+  </button>
+
+</div>
 
   <!-- Loading Spinner -->
   <div *ngIf="loading" class="text-center">
@@ -52,10 +60,10 @@
     <button mat-button color="primary" (click)="viewDetails(s.id)">View</button>
 
     <!-- Edit Button -->
-    <button mat-button color="accent" (click)="editScholarship(s.id)">Edit</button>
+    <button mat-button color="accent"  *ngIf="isAdmin()"  (click)="editScholarship(s.id)">Edit</button>
 
     <!-- Delete Button -->
-    <button mat-button color="warn" (click)="deleteScholarship(s.id)">Delete</button>
+    <button mat-button color="warn"  *ngIf="isAdmin()"  (click)="deleteScholarship(s.id)">Delete</button>
 
     <!-- Apply Button (optional, e.g., only for students) -->
     <button mat-button color="primary" *ngIf="!s.applied" (click)="applyForScholarship(s.id)">Apply</button>

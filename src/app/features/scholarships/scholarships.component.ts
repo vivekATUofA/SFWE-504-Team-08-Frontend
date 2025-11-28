@@ -7,24 +7,29 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+
 import { HeaderComponent } from '../../shared/components/header/header.component';
 import { FooterComponent } from '../../shared/components/footer/footer.component';
+import { ScholarshipDialogComponent } from './scholarship-dialog/scholarship-dialog.component';
 
 import { ApiService } from '../../../../src/app/core/services/api.service';
-
+import { AuthService } from '../../../../src/app/core/services/auth.service';
 interface Scholarship {
   id: number;
   name: string;
   description: string;
   amount: number;
   archived: boolean;
-  applied?: boolean; // optional for student actions
+  deadline?: string;
+  applied?: boolean;
 }
 
 @Component({
   selector: 'app-scholarships',
   standalone: true,
   templateUrl: './scholarships.component.html',
+  styleUrls: ['./scholarships.component.css'], 
   imports: [
     CommonModule,
     RouterModule,
@@ -34,8 +39,9 @@ interface Scholarship {
     MatInputModule,
     MatButtonModule,
     MatSnackBarModule,
-    HeaderComponent,  
-    FooterComponent  
+    MatDialogModule,
+    HeaderComponent,
+    FooterComponent
   ]
 })
 export class ScholarshipsComponent implements OnInit {
@@ -50,7 +56,10 @@ export class ScholarshipsComponent implements OnInit {
 
   constructor(
     private apiService: ApiService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog,
+    private authService: AuthService,
+
   ) {}
 
   ngOnInit(): void {
@@ -66,42 +75,84 @@ export class ScholarshipsComponent implements OnInit {
         this.dataSource.sort = this.sort;
         this.loading = false;
       },
-      error: (err) => {
+      error: () => {
         this.loading = false;
-        console.error('Error loading scholarships', err);
         this.snackBar.open('Failed to load scholarships', 'Close', { duration: 3000 });
       }
     });
   }
 
   applyFilter(event: Event): void {
-    const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
-    this.dataSource.filter = filterValue;
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
+    const value = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.dataSource.filter = value;
+  }
+
+  // =============================
+  //    CREATE SCHOLARSHIP
+  // =============================
+  createScholarship() {
+    const dialogRef = this.dialog.open(ScholarshipDialogComponent);
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.apiService.post('/scholarships', result).subscribe({
+          next: () => {
+            this.snackBar.open('Scholarship created', 'Close', { duration: 3000 });
+            this.loadScholarships();
+          }
+        });
+      }
+    });
+  }
+
+  // =============================
+  //    EDIT SCHOLARSHIP
+  // =============================
+  editScholarship(id: number) {
+    const scholarship = this.dataSource.data.find(s => s.id === id);
+    if (!scholarship) return;
+
+    const dialogRef = this.dialog.open(ScholarshipDialogComponent, {
+      data: scholarship
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.apiService.put(`/scholarships/${id}`, result).subscribe({
+          next: () => {
+            this.snackBar.open('Scholarship updated', 'Close', { duration: 3000 });
+            this.loadScholarships();
+          }
+        });
+      }
+    });
+  }
+
+  // =============================
+  //    DELETE SCHOLARSHIP
+  // =============================
+  deleteScholarship(id: number) {
+    if (confirm('Are you sure you want to delete this scholarship?')) {
+      this.apiService.delete(`/scholarships/${id}`).subscribe({
+        next: () => {
+          this.snackBar.open('Scholarship deleted', 'Close', { duration: 3000 });
+          this.loadScholarships();
+        }
+      });
     }
   }
 
-  viewDetails(scholarshipId: number): void {
-    console.log('View details for scholarship', scholarshipId);
-    // Future: navigate to a detailed page
+  applyForScholarship(id: number) {
+    this.snackBar.open('Apply API not added yet.', 'Close', { duration: 2000 });
   }
 
-editScholarship(id: number) {
-  console.log('Edit scholarship', id);
-  // TODO: Open edit dialog or navigate to edit page
+  viewDetails(id: number) {
+  console.log("View details", id);
+  // Future: navigate to detail page
 }
 
-deleteScholarship(id: number) {
-  console.log('Delete scholarship', id);
-  // TODO: Call API to delete
-}
-
-applyForScholarship(id: number) {
-  console.log('Apply for scholarship', id);
-  // TODO: Call API to apply
-  const scholarship = this.dataSource.data.find(s => s.id === id);
-  if (scholarship) scholarship.applied = true;
+isAdmin(): boolean {
+  return this.authService.isAdmin();
 }
 
 }

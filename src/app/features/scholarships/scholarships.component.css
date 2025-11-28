@@ -1,0 +1,26 @@
+.action-bar {
+  padding: 10px 0;
+}
+
+.search-field {
+  width: 300px;
+}
+
+.btn-add {
+  background-color: #ab0520 !important;
+  color: white !important;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 6px;
+  transition: 0.3s ease;
+}
+
+.btn-add:hover {
+  background-color: rgb(12, 35, 75) !important;
+  color: #fff !important;
+  transform: translateY(-2px);
+}
+
+mat-form-field {
+  background: white;
+}

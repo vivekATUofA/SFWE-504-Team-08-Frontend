@@ -69,4 +69,13 @@ export class AuthService {
     }
     return null;
   }
+
+  isAdmin(): boolean {
+  const user = localStorage.getItem('user');
+  if (!user) return false;
+
+  const u = JSON.parse(user);
+  return u.role === 'ADMIN' || u.authorities?.some((a: any) => a.authority === 'ROLE_ADMIN');
+}
+
 }
