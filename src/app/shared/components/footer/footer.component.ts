@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-footer',
   standalone: true,
   template: `
-    <footer class="text-center text-white py-4" [ngStyle]="{'background-color': footerColor}">
+    <footer class="text-center text-white py-1" [ngStyle]="{'background-color': footerColor}">
       <div class="container">
         &copy; {{ currentYear }} SFWE Scholarship Portal. All rights reserved.
       </div>
@@ -15,6 +15,6 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule]
 })
 export class FooterComponent {
-  footerColor = 'rgb(12, 35, 75)'; // navy
+  footerColor = 'rgba(122, 123, 124, 1)'; // navy
   currentYear = new Date().getFullYear();
 }

@@ -1,7 +1,8 @@
-<div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
-  <div class="card p-4 shadow-lg" style="max-width: 380px; width: 100%;">
-    <h2 class="text-center mb-4 text-primary">User Login</h2>
-
+<div class="d-flex justify-content-center align-items-center" style="min-height: 90vh;">
+  <div class="card p-4 shadow-lg" style="max-width: 400px; width: 100%;">
+  <div class="text-center mb-3">
+    <img src="logo.jpg" alt="Logo" style="height: 70px;">
+  </div>
     <form [formGroup]="form" (ngSubmit)="login()">
       <div class="mb-3">
         <label for="email" class="form-label">Email</label>
@@ -18,7 +19,7 @@
 
       <div class="alert alert-danger text-center" *ngIf="errorMessage">{{ errorMessage }}</div>
 
-      <button type="submit" class="btn btn-primary w-100" [disabled]="loading || form.invalid">
+      <button type="submit" class="btn btn-primary bg-blue w-100" [disabled]="loading || form.invalid">
         <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
         {{ loading ? 'Logging in...' : 'Login' }}
       </button>
@@ -29,3 +30,4 @@
     </p>
   </div>
 </div>
+<app-footer></app-footer>

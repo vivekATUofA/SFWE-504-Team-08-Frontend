@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router,  RouterModule} from '@angular/router';
 import { CommonModule } from '@angular/common'; // Provides *ngIf and NgClass
 import { AuthService } from '../../../../../src/app/core/services/auth.service';
+import { FooterComponent } from '../../../shared/components/footer/footer.component';
+
 
 @Component({
   selector: 'app-login',
@@ -12,7 +14,8 @@ import { AuthService } from '../../../../../src/app/core/services/auth.service';
   imports: [
     CommonModule,        
     ReactiveFormsModule,
-    RouterModule    
+    RouterModule ,
+    FooterComponent  
   ]
 })
 export class LoginComponent implements OnInit {
