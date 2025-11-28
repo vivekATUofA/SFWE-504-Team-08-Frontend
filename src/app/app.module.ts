@@ -1,33 +1,37 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http'; // Grouped HTTP imports
-import { FormsModule, ReactiveFormsModule } from '@angular/forms'; 
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
-// Custom Modules
 import { CoreModule } from './core/core.module';
 import { SharedModule } from './shared/shared.module';
 
-// Interceptor (moved up for clean grouping)
-import { AuthInterceptor } from './core/interceptors/auth.interceptor'; 
+// Auth Interceptor
+import { AuthInterceptor } from './core/interceptors/auth.interceptor';
+
+// Standalone DashboardComponent
+import { DashboardComponent } from './features/dashboard/dashboard/dashboard.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent  // ⬅️ ONLY non-standalone components here
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule, 
+    HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
     CoreModule,
-    SharedModule
+    SharedModule,
+
+    // ⬇️ IMPORT standalone component
+    DashboardComponent
   ],
   providers: [
-    // Registration of AuthInterceptor
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
