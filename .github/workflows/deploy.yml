@@ -27,18 +27,39 @@ jobs:
         run: npm install
 
       - name: Build Angular application (Production and Base Href)
-        # 1. Use --configuration=production for optimization.
-        # 2. Use the correct base-href for GitHub Pages.
-        # Output path is fixed to 'deploy-output'.
+        # Uses production config and sets the critical base-href.
         run: npm run build -- --configuration=production --output-path=deploy-output --base-href=/SFWE-504-Team-08-Frontend/
+
+      - name: Diagnose Build Output Structure
+        # NEW STEP: This lists all files created, revealing the exact path to index.html.
+        run: |
+          echo "--- Listing contents of ./deploy-output ---"
+          ls -R ./deploy-output
+          echo "----------------------------------------"
+
+      - name: Define Publish Directory (Dynamic Search)
+        # Reverting to the dynamic search to correctly find the nested folder.
+        id: find_publish_dir
+        run: |
+          BUILD_ROOT="./deploy-output"
+          
+          # Find the actual directory containing index.html
+          PUBLISH_DIR=$(find $BUILD_ROOT -name index.html -print -quit | xargs dirname)
+          
+          if [ -z "$PUBLISH_DIR" ]; then
+            echo "::error::Could not find index.html inside $BUILD_ROOT. Deployment will fail."
+            exit 1
+          fi
+          
+          echo "Found publish directory: $PUBLISH_DIR"
+          echo "PUBLISH_DIR=$PUBLISH_DIR" >> $GITHUB_OUTPUT
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          # CRITICAL FIX: The final deployable files are usually in 'browser/' 
-          # when building a custom output path. We hardcode this common path.
-          publish_dir: ./deploy-output/browser
+          # Uses the dynamically found path, e.g., ./deploy-output/app-name/browser
+          publish_dir: ${{ steps.find_publish_dir.outputs.PUBLISH_DIR }}
           publish_branch: gh-pages
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
