@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
@@ -15,6 +15,7 @@ import { ScholarshipDialogComponent } from './scholarship-dialog/scholarship-dia
 
 import { ApiService } from '../../../../src/app/core/services/api.service';
 import { AuthService } from '../../../../src/app/core/services/auth.service';
+
 interface Scholarship {
   id: number;
   name: string;
@@ -29,7 +30,7 @@ interface Scholarship {
   selector: 'app-scholarships',
   standalone: true,
   templateUrl: './scholarships.component.html',
-  styleUrls: ['./scholarships.component.css'], 
+  styleUrls: ['./scholarships.component.css'],
   imports: [
     CommonModule,
     RouterModule,
@@ -44,11 +45,12 @@ interface Scholarship {
     FooterComponent
   ]
 })
-export class ScholarshipsComponent implements OnInit {
+export class ScholarshipsComponent implements OnInit, AfterViewInit {
 
   displayedColumns: string[] = ['id', 'name', 'description', 'amount', 'actions'];
   dataSource = new MatTableDataSource<Scholarship>([]);
 
+  // make sure these match the template ViewChild selectors
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -59,21 +61,56 @@ export class ScholarshipsComponent implements OnInit {
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
     private authService: AuthService,
-
   ) {}
 
   ngOnInit(): void {
+    // sorting accessor: case-insensitive for strings, numeric for amount
+    this.dataSource.sortingDataAccessor = (item: any, property: string) => {
+      switch (property) {
+        case 'name':
+          return item.name?.toLowerCase() ?? '';
+        case 'description':
+          return item.description?.toLowerCase() ?? '';
+        case 'amount':
+          return Number(item.amount ?? 0);
+        default:
+          return item[property];
+      }
+    };
+
     this.loadScholarships();
+  }
+
+  ngAfterViewInit(): void {
+    // Attach paginator and sort when view is ready
+    if (this.paginator) {
+      this.dataSource.paginator = this.paginator;
+    }
+    if (this.sort) {
+      this.dataSource.sort = this.sort;
+    }
   }
 
   loadScholarships(): void {
     this.loading = true;
+
     this.apiService.get('/scholarships').subscribe({
       next: (data: Scholarship[]) => {
-        this.dataSource.data = data;
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
+        this.dataSource.data = data || [];
         this.loading = false;
+
+        // Defensive: ensure paginator/sort are attached even if data returns before view init
+        if (this.paginator && this.dataSource.paginator !== this.paginator) {
+          this.dataSource.paginator = this.paginator;
+        }
+        if (this.sort && this.dataSource.sort !== this.sort) {
+          this.dataSource.sort = this.sort;
+        }
+
+        // reset to first page after reload
+        if (this.paginator) {
+          this.paginator.firstPage();
+        }
       },
       error: () => {
         this.loading = false;
@@ -85,11 +122,12 @@ export class ScholarshipsComponent implements OnInit {
   applyFilter(event: Event): void {
     const value = (event.target as HTMLInputElement).value.trim().toLowerCase();
     this.dataSource.filter = value;
+
+    if (this.paginator) {
+      this.paginator.firstPage();
+    }
   }
 
-  // =============================
-  //    CREATE SCHOLARSHIP
-  // =============================
   createScholarship() {
     const dialogRef = this.dialog.open(ScholarshipDialogComponent);
 
@@ -99,22 +137,20 @@ export class ScholarshipsComponent implements OnInit {
           next: () => {
             this.snackBar.open('Scholarship created', 'Close', { duration: 3000 });
             this.loadScholarships();
+          },
+          error: () => {
+            this.snackBar.open('Create failed', 'Close', { duration: 3000 });
           }
         });
       }
     });
   }
 
-  // =============================
-  //    EDIT SCHOLARSHIP
-  // =============================
   editScholarship(id: number) {
     const scholarship = this.dataSource.data.find(s => s.id === id);
     if (!scholarship) return;
 
-    const dialogRef = this.dialog.open(ScholarshipDialogComponent, {
-      data: scholarship
-    });
+    const dialogRef = this.dialog.open(ScholarshipDialogComponent, { data: scholarship });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
@@ -122,21 +158,24 @@ export class ScholarshipsComponent implements OnInit {
           next: () => {
             this.snackBar.open('Scholarship updated', 'Close', { duration: 3000 });
             this.loadScholarships();
+          },
+          error: () => {
+            this.snackBar.open('Update failed', 'Close', { duration: 3000 });
           }
         });
       }
     });
   }
 
-  // =============================
-  //    DELETE SCHOLARSHIP
-  // =============================
   deleteScholarship(id: number) {
     if (confirm('Are you sure you want to delete this scholarship?')) {
       this.apiService.delete(`/scholarships/${id}`).subscribe({
         next: () => {
           this.snackBar.open('Scholarship deleted', 'Close', { duration: 3000 });
           this.loadScholarships();
+        },
+        error: () => {
+          this.snackBar.open('Delete failed', 'Close', { duration: 3000 });
         }
       });
     }
@@ -147,12 +186,10 @@ export class ScholarshipsComponent implements OnInit {
   }
 
   viewDetails(id: number) {
-  console.log("View details", id);
-  // Future: navigate to detail page
-}
+    console.log("View details", id);
+  }
 
-isAdmin(): boolean {
-  return this.authService.isAdmin();
-}
-
+  isAdmin(): boolean {
+    return this.authService.isAdmin();
+  }
 }

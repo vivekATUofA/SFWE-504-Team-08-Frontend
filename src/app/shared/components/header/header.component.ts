@@ -5,17 +5,7 @@ import { RouterModule, Router } from '@angular/router';
 @Component({
   selector: 'app-header',
   standalone: true,
-  template: `
-    <nav class="navbar navbar-expand-lg" [ngStyle]="{'background-color': headerColor, color: 'white'}">
-      <div class="container-fluid">
-        <a class="navbar-brand text-white font-weight-bold" routerLink="/">Scholarship Portal</a>
-        <div class="ms-auto">
-          <button *ngIf="isLoggedIn()" class="btn btn-outline-light" (click)="logout()">Logout</button>
-          <a *ngIf="!isLoggedIn()" class="btn btn-outline-light" routerLink="/auth/login">Login</a>
-        </div>
-      </div>
-    </nav>
-  `,
+  templateUrl: './header.component.html',
   imports: [CommonModule, RouterModule]
 })
 export class HeaderComponent {
