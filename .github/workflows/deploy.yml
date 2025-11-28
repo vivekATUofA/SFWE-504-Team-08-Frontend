@@ -3,11 +3,17 @@ name: Deploy Angular Frontend to GitHub Pages
 on:
   push:
     branches:
-      - main # Triggers the deploy when pushing to 'develop'
+      - develop
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    
+    # CRITICAL FIX: Add write permissions for the GITHUB_TOKEN
+    permissions:
+      contents: write
+      pages: write # Explicitly required for GitHub Pages deployment
+      id-token: write # Required for some newer deployment methods, good practice to include
     
     steps:
       - name: Checkout code
@@ -19,18 +25,12 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        # Running 'npm install' at the root of the repository
         run: npm install
 
       - name: Build Angular application
-        # CRITICAL: Use the new repository name for base-href.
-        # This tells Angular to prefix all asset paths (JS, CSS, favicon) 
-        # with /SFWE-504-Team-08-Frontend/
         run: npm run build -- --output-path=deploy-output --base-href=/SFWE-504-Team-08-Frontend/
 
       - name: Define Publish Directory (Find index.html)
-        # CRITICAL FIX FOR 404s: Dynamically find the exact subfolder 
-        # (e.g., ./deploy-output/browser) that contains the final index.html.
         id: find_publish_dir
         run: |
           BUILD_ROOT="./deploy-output"
@@ -44,14 +44,12 @@ jobs:
           fi
           
           echo "Found publish directory: $PUBLISH_DIR"
-          # Set the path as an output variable for the next step
           echo "PUBLISH_DIR=$PUBLISH_DIR" >> $GITHUB_OUTPUT
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          # Use the dynamically found path, e.g., ./deploy-output/browser
           publish_dir: ${{ steps.find_publish_dir.outputs.PUBLISH_DIR }}
           publish_branch: gh-pages
           user_name: 'github-actions[bot]'
