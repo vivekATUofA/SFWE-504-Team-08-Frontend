@@ -17,3 +17,17 @@
 .navbar-nav .nav-item .nav-link.active {
   color: #ab0520 !important;
 }
+
+
+/* Ensure the list takes full width and is centered */
+.navbar-collapse {
+  /* This ensures the links container takes up available space */
+  display: flex; 
+  justify-content: center; /* Horizontally centers the children */
+}
+
+.navbar-nav {
+  /* Removes Bootstrap's default margin that might push it left */
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
