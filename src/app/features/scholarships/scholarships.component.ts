@@ -181,9 +181,28 @@ export class ScholarshipsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  applyForScholarship(id: number) {
-    this.snackBar.open('Apply API not added yet.', 'Close', { duration: 2000 });
+applyForScholarship(scholarshipId: number): void {
+  const userId = this.authService.getCurrentUser().id; // <-- MUST exist in AuthService
+
+  if (!userId) {
+    this.snackBar.open('User not logged in', 'Close', { duration: 2000 });
+    return;
   }
+
+  const url = `/scholarships/${scholarshipId}/apply/${userId}`;
+
+  this.apiService.post(url).subscribe({
+    next: () => {
+      this.snackBar.open('Application submitted successfully!', 'Close', { duration: 3000 });
+      this.loadScholarships();
+    },
+    error: (err) => {
+      this.snackBar.open('Failed to apply for scholarship', 'Close', { duration: 3000 });
+      console.error(err);
+    }
+  });
+}
+
 
   viewDetails(id: number) {
     console.log("View details", id);

@@ -49,7 +49,7 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef> Actions </th>
         <td mat-cell *matCellDef="let element">
-          <button class="btn btn-outline-primary btn-xs" (click)="viewDetails(element.id)">Apply</button>
+          <button class="btn btn-outline-primary btn-xs" (click)="applyForScholarship(element.id)">Apply</button>
           <button class="btn btn-outline-warning btn-xs" *ngIf="isAdmin()" (click)="editScholarship(element.id)">Edit</button>
           <button class="btn btn-outline-danger btn-xs" *ngIf="isAdmin()" (click)="deleteScholarship(element.id)">Delete</button>
         </td>
