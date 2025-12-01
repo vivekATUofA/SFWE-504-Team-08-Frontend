@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 // Import the DashboardComponent to use it in the static route
 import { DashboardComponent } from './features/dashboard/dashboard/dashboard.component'; 
+import { UsersComponent } from './features/users/users.component';
 
 const routes: Routes = [
   // Lazy-loaded Authentication Module (Login & Register)
@@ -15,6 +16,12 @@ const routes: Routes = [
   {
     path: 'dashboard',
     component: DashboardComponent, 
+    canActivate: [authGuard]
+  },
+  // Dashboard Route (Protected - Must be defined before redirect)
+  {
+    path: 'users',
+    component: UsersComponent, 
     canActivate: [authGuard]
   },
 
