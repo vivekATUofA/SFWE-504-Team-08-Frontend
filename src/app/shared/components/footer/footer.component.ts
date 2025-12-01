@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-footer',
   standalone: true,
   template: `
-    <footer class="text-center text-white py-1" [ngStyle]="{'background-color': footerColor}">
+    <footer class="text-center text-gray-600 py-3 small fst-italic text-muted">
       <div class="container">
         &copy; {{ currentYear }} SFWE Scholarship Portal. All rights reserved.
       </div>

@@ -1,0 +1,19 @@
+/* Apply styles only on large screens (>= 992px) where the navbar is horizontal */
+@media (min-width: 992px) {
+  .navbar-brand {
+    /* Subtle box-shadow extending to the right, giving a separated effect */
+    box-shadow: 1px 0px 5px rgba(0, 0, 0, 0.05); 
+    
+    /* Increase padding to separate the content from the border/shadow */
+    padding-right: 1.5rem !important;
+    
+    /* Increase margin to separate the border from the menu links */
+    margin-right: 1.5rem !important;
+  }
+}
+
+.navbar-nav .nav-item .nav-link:hover,
+.navbar-nav .nav-item .nav-link:focus,
+.navbar-nav .nav-item .nav-link.active {
+  color: #ab0520 !important;
+}
